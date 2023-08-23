@@ -1,4 +1,5 @@
 var cropper;
+var selectedUsers = [];
 
 // ---------------------------------------------------------------
 const handleLogout = async (err) => {
@@ -552,6 +553,14 @@ if (userSearchTextBox) {
     let value = userSearchTextBox.value;
 
     if (value == '' && e.keyCode == 8) {
+      selectedUsers.pop();
+      updateSelectedUsersHTML();
+      document.querySelector('.resultsContainer').innerHTML = '';
+
+      if (selectedUsers.length == 0) {
+        document.getElementById('createChatButton').disabled = true;
+      }
+
       return;
     }
 
@@ -591,11 +600,14 @@ const renderUsersForMessageSearch = (res, container) => {
     let html = '';
 
     users.forEach((user) => {
-      if (user._id == res.data.userRequest._id) {
+      if (
+        user._id == res.data.userRequest._id ||
+        selectedUsers.some((u) => u.username == user.username)
+      ) {
         return;
       }
 
-      html += `<div class="user">
+      html += `<div class="user" onclick="userSelected('${user.username}', '${user.firstname}', '${user.lastname}')">
             <div class="userImageContainer">
                 <img src="${user.photo}">
             </div>
@@ -612,4 +624,33 @@ const renderUsersForMessageSearch = (res, container) => {
   } else {
     container.innerHTML = '<span class="noResults">No results</span>';
   }
+};
+
+const userSelected = (username, firstname, lastname) => {
+  selectedUsers.push({ username, firstname, lastname });
+  updateSelectedUsersHTML();
+
+  document.getElementById('userSearchTextBox').value = '';
+  document.getElementById('userSearchTextBox').focus();
+  document.querySelector('.resultsContainer').innerHTML = '';
+  document.getElementById('createChatButton').disabled = false;
+};
+
+const updateSelectedUsersHTML = () => {
+  let elements = [];
+
+  selectedUsers.forEach((user) => {
+    const name = user.firstname + ' ' + user.lastname;
+    const userElement = `<span class="selectedUser">${name}</span>`;
+    elements.push(userElement);
+  });
+
+  const selectedUserArray = document.querySelectorAll('.selectedUser');
+  if (selectedUserArray) {
+    selectedUserArray.forEach((user) => user.remove());
+  }
+
+  document
+    .getElementById('selectedUser')
+    .insertAdjacentHTML('beforebegin', elements);
 };

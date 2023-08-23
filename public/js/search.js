@@ -156,16 +156,20 @@ const renderSearchUser = (res, container) => {
 
     users.forEach((user) => {
       let followButton = '';
-      const buttonClass = userRequestJS.following.includes(user._id)
-        ? 'class= "followButton following"'
-        : 'class= "followButton"';
-      const buttonText = userRequestJS.following.includes(user._id)
-        ? 'Following'
-        : 'Follow';
+      if (user._id == res.data.userRequest._id) {
+        return;
+      } else {
+        const buttonClass = userRequestJS.following.includes(user._id)
+          ? 'class= "followButton following"'
+          : 'class= "followButton"';
+        const buttonText = userRequestJS.following.includes(user._id)
+          ? 'Following'
+          : 'Follow';
 
-      followButton = `<div class="followButtonContainer">
+        followButton = `<div class="followButtonContainer">
               <button ${buttonClass} data-user="${user._id}">${buttonText}</button>
           </div>`;
+      }
 
       html += `<div class="user">
             <div class="userImageContainer">
