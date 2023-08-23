@@ -542,7 +542,7 @@ if (pinPostButton) {
   });
 }
 
-// ----------------------------messages--------------------------------
+// ----------------------------find user for chat--------------------------------
 let timerMessage;
 
 const userSearchTextBox = document.getElementById('userSearchTextBox');
@@ -607,7 +607,7 @@ const renderUsersForMessageSearch = (res, container) => {
         return;
       }
 
-      html += `<div class="user" onclick="userSelected('${user.username}', '${user.firstname}', '${user.lastname}')">
+      html += `<div class="user" onclick="userSelected('${user.username}','${user.firstname}','${user.lastname}', '${user._id}')">
             <div class="userImageContainer">
                 <img src="${user.photo}">
             </div>
@@ -626,8 +626,8 @@ const renderUsersForMessageSearch = (res, container) => {
   }
 };
 
-const userSelected = (username, firstname, lastname) => {
-  selectedUsers.push({ username, firstname, lastname });
+const userSelected = (username, firstname, lastname, _id) => {
+  selectedUsers.push({ username, firstname, lastname, _id });
   updateSelectedUsersHTML();
 
   document.getElementById('userSearchTextBox').value = '';
@@ -654,3 +654,23 @@ const updateSelectedUsersHTML = () => {
     .getElementById('selectedUser')
     .insertAdjacentHTML('beforebegin', elements);
 };
+
+// ----------------------------chat--------------------------------
+const createChatButton = document.getElementById('createChatButton');
+if (createChatButton) {
+  createChatButton.addEventListener('click', async () => {
+    try {
+      const res = await axios({
+        method: 'POST',
+        url: 'http://localhost:8001/api/v1/chats',
+        data: { users: selectedUsers },
+      });
+
+      if (res.data.status === 'success') {
+        window.location.href = `/messages/${res.data.chat._id}`;
+      }
+    } catch (error) {
+      handleLogout(error);
+    }
+  });
+}

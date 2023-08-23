@@ -12,6 +12,7 @@ const viewRouter = require('./routes/view.routes');
 const authRouter = require('./routes/auth.routes');
 const postRouter = require('./routes/post.routes');
 const userRouter = require('./routes/user.routes');
+const chatRouter = require('./routes/chat.routes');
 const CustomError = require('./utils/customError');
 const errorHandler = require('./middlewares/error.middleware');
 
@@ -35,6 +36,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/posts', postRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/chats', chatRouter);
 
 // handle error
 app.all('*', (req, res) => {
