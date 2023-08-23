@@ -1,0 +1,20 @@
+extends layouts/home_layout
+
+block content 
+    script.
+        const userRequestJS = !{userRequestJS};
+    .searchBarContainer
+        i.fas.fa-search
+        input#searchBox(type="text", name="searchBox", data-search=selectedTab, placeholder='search something')
+    .tabsContainer
+        +createTab('Posts', `/search/posts`, selectedTab == 'posts')
+        +createTab('Users', `/search/users`, selectedTab == 'users')
+    .resultsContainer
+    +createReplyModal()
+    +createDeletePostModal()
+    +createPinModal()
+    +createImageUploadModal()
+    +createCoverPhotoUploadModal()
+
+block scripts 
+    script(src="/js/search.js") 

@@ -1,0 +1,54 @@
+extends layouts/home_layout
+
+block content
+    if !user 
+        span.errorMessage This account doesn't exist
+    else 
+        script. 
+            const userJS = !{userJS};
+            const selectedTabJS = !{selectedTabJS};
+        .profileHeaderContainer 
+            .coverPhotoSection
+                .coverPhotoContainer
+                    if user.cover
+                        img(src=user.cover, alt='cover photo')
+                    if  user.username == userRequest.username
+                        button.coverPhotoButton(data-toggle='modal', data-target='#coverPhotoUploadModal')
+                            i.fas.fa-camera
+                .userImageContainer
+                    img(src=user.photo, alt="User profile image")
+                    if  user.username == userRequest.username
+                        button.profilePictureButton(data-toggle='modal', data-target='#imageUploadModal')
+                            i.fas.fa-camera
+            .profileButtonContainer
+                if user.username != userRequest.username
+                    a.profileButton(href=`/messages/${user._id}`)
+                        i.fas.fa-envelope
+                    - if (userRequest.following && userRequest.following.includes(user._id))
+                        +createFollowButton(user, true)
+                    - else
+                        +createFollowButton(user, false)
+            .userDetailsContainer
+                span.displayName= `${user.firstname} ${user.lastname}`
+                span.username= `@${user.username}`
+                span.description= user.description
+                .followersContainer
+                    a(href=`/profile/${user.username}/following`)
+                        span.value= user.following.length
+                        span following
+                    a(href=`/profile/${user.username}/followers`)
+                        span#followersValue.value= user.followers.length
+                        span followers
+        .tabsContainer
+            +createTab('Posts', `/profile/${user.username}`, selectedTab == 'posts')
+            +createTab('Replies', `/profile/${user.username}/replies`, selectedTab == 'replies')
+        .pinnedPostContainer
+        .postContainer
+        +createReplyModal()
+        +createDeletePostModal()
+        +createPinModal()
+        +createImageUploadModal()
+        +createCoverPhotoUploadModal()
+
+block scripts 
+    script(src="/js/profile.js") 

@@ -1,0 +1,10 @@
+extends layouts/home_layout
+
+block content 
+    .chatPageContainer 
+        .chatTitleBar 
+            label(for='userSearchTextBox') To:
+            #selectedUsers
+                input#userSearchTextBox(type='text', placeholder='Search for person name')
+        .resultsContainer
+        button#createChatButton(disabled) Create new chat

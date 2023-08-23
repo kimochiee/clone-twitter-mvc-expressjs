@@ -1,0 +1,17 @@
+extends layouts/home_layout
+
+block content
+    if !user 
+        span.errorMessage This account doesn't exist
+    else 
+        script. 
+            const userJS = !{userJS};
+            const userRequestJS = !{userRequestJS};
+            const selectedTabJS = !{selectedTabJS};
+        .tabsContainer
+            +createTab('Following', `/profile/${user.username}/following`, selectedTab == 'following')
+            +createTab('Followers', `/profile/${user.username}/followers`, selectedTab == 'followers')
+        .resultsContainer
+
+block scripts 
+    script(src="/js/followingAndFollowers.js") 

@@ -1,0 +1,9 @@
+extends layouts/home_layout
+
+block content 
+    .postContainer
+    +createReplyModal()
+    +createDeletePostModal()
+
+block scripts 
+    script(src="/js/post.js") 
