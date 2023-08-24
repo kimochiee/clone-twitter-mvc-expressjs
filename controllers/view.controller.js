@@ -1,5 +1,7 @@
 const User = require('../models/user.schema');
+const Chat = require('../models/chat.schema');
 const catchAsync = require('../utils/catchAsync');
+const CustomError = require('../utils/customError');
 
 const renderHomepage = (req, res) => {
   res.status(200).render('home', {
@@ -113,13 +115,26 @@ const renderNewMessagePage = (req, res) => {
   });
 };
 
-// const renderChatList = (req, res) => {
-//   res.status(200).render('inbox', {
-//     title: '',
-//     userRequest: req.user,
-//     userRequestJS: JSON.stringify(req.user),
-//   });
-// };
+const renderChatPage = catchAsync(async (req, res, next) => {
+  const chatId = req.params.id;
+  const userId = req.user._id;
+
+  const chat = await Chat.findOne({
+    _id: chatId,
+    users: { $elemMatch: { $eq: userId } },
+  }).populate('users');
+
+  if (!chat) {
+  }
+
+  res.status(200).render('chat', {
+    title: 'chat',
+    userRequest: req.user,
+    userRequestJS: JSON.stringify(req.user),
+    chat,
+    chatJS: JSON.stringify(chat),
+  });
+});
 
 module.exports = {
   renderHomepage,
@@ -134,4 +149,5 @@ module.exports = {
   renderSearchPageForUsers,
   renderInboxPage,
   renderNewMessagePage,
+  renderChatPage,
 };

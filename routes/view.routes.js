@@ -14,6 +14,7 @@ const {
   renderSearchPageForUsers,
   renderInboxPage,
   renderNewMessagePage,
+  renderChatPage
 } = require('../controllers/view.controller');
 const { isLoggedIn } = require('../middlewares/auth.middleware');
 
@@ -23,7 +24,7 @@ router.get('/register', renderRegisterPage);
 
 router.get('/messages', isLoggedIn, renderInboxPage);
 router.get('/messages/new', isLoggedIn, renderNewMessagePage);
-router.get('/messages/:id', isLoggedIn);
+router.get('/messages/:id', isLoggedIn, renderChatPage);
 
 router.get('/search', isLoggedIn, renderSearchPageForPosts);
 router.get('/search/posts', isLoggedIn, renderSearchPageForPosts);
