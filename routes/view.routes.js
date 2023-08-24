@@ -23,6 +23,7 @@ router.get('/register', renderRegisterPage);
 
 router.get('/messages', isLoggedIn, renderInboxPage);
 router.get('/messages/new', isLoggedIn, renderNewMessagePage);
+router.get('/messages/:id', isLoggedIn);
 
 router.get('/search', isLoggedIn, renderSearchPageForPosts);
 router.get('/search/posts', isLoggedIn, renderSearchPageForPosts);

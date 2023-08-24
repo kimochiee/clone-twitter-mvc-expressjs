@@ -4,6 +4,14 @@ const { ObjectId } = require('mongodb');
 const catchAsync = require('../utils/catchAsync');
 const CustomError = require('../utils/customError');
 
+const getChatListForUser = catchAsync(async (req, res, next) => {
+  const chats = await Chat.find({
+    users: { $elemMatch: { $eq: req.user._id } },
+  }).populate('users');
+
+  res.status(200).json({ status: 'success', chats });
+});
+
 const createChat = catchAsync(async (req, res, next) => {
   let users = req.body.users;
 
@@ -32,4 +40,4 @@ const createChat = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'success', chat });
 });
 
-module.exports = { createChat };
+module.exports = { getChatListForUser, createChat };

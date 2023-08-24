@@ -113,6 +113,14 @@ const renderNewMessagePage = (req, res) => {
   });
 };
 
+// const renderChatList = (req, res) => {
+//   res.status(200).render('inbox', {
+//     title: '',
+//     userRequest: req.user,
+//     userRequestJS: JSON.stringify(req.user),
+//   });
+// };
+
 module.exports = {
   renderHomepage,
   renderLoginPage,
