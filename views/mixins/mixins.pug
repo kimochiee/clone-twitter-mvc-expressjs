@@ -93,3 +93,23 @@ mixin createPinModal()
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
                     button#pinPostButton.btn.btn-primary(type='button') Accept
+
+mixin createChatImage(chatData, userLoggedIn)
+    if (!chatData)    
+        return
+    - let i = 0
+    - const maxImagesToShow = 3
+    - let remainingUsers = chatData.users.length - maxImagesToShow
+    - remainingUsers--
+    .chatImagesContainer
+        if remainingUsers > 0
+            .userCount
+                span= `+${remainingUsers}`
+        each user in chatData.users
+            if chatData.users.length != 1 && user._id == userLoggedIn._id
+                - continue
+            else if i >= maxImagesToShow
+                - break
+            img(src=user.photo, alt='user photo', title=user.username)
+            - i++
+

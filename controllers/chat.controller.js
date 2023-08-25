@@ -7,7 +7,9 @@ const CustomError = require('../utils/customError');
 const getChatListForUser = catchAsync(async (req, res, next) => {
   const chats = await Chat.find({
     users: { $elemMatch: { $eq: req.user._id } },
-  }).populate('users');
+  })
+    .populate('users')
+    .sort({ updatedAt: -1 });
 
   res.status(200).json({ status: 'success', chats });
 });

@@ -1,8 +1,22 @@
 extends layouts/home_layout
 
 block content 
-    script. 
-        const chatId = !{chat._id}
+    if errorMessage 
+        span.errorMessage= errorMessage
+    else
+        script. 
+            const chatJS = !{chatJS};
+        .chatPageContainer
+            .chatTitleBarContainer
+                +createChatImage(chat, userRequest)
+                span#chatName this is chat name
+            .mainContentContainer
+                .chatContainer
+                    .chatMessages
+                    .footer
+                        textarea(name='messageInput', placeHolder='Type something...') 
+                        button.sendMessageButton
+                            i.fas.fa-paper-plane
 
 block scripts 
     script(src="/js/chat.js") 
