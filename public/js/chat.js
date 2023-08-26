@@ -34,3 +34,43 @@ if (chatNameButton) {
   });
 }
 
+const sendMessageButton = document.querySelector('.sendMessageButton');
+if (sendMessageButton) {
+  sendMessageButton.addEventListener('click', () => {
+    messageSubmitred();
+  });
+}
+
+const inputTextbox = document.querySelector('.inputTextbox');
+if (inputTextbox) {
+  inputTextbox.addEventListener('keydown', (e) => {
+    if (e.which == 13 && !e.shiftKey) {
+      messageSubmitred();
+      e.preventDefault();
+    }
+  });
+}
+
+const messageSubmitred = () => {
+  const content = inputTextbox.value.trim();
+  if (content != '') {
+    sendMessage(content);
+    inputTextbox.value = '';
+  }
+};
+
+const sendMessage = async (content) => {
+  try {
+    const res = await axios({
+      method: 'POST',
+      url: 'http://localhost:8001/api/v1/messages',
+      data: { content, chatId: chatJS._id },
+    });
+
+    if (res.data.status === 'success') {
+      console.log(res.data.message);
+    }
+  } catch (error) {
+    handleLogout(error);
+  }
+};

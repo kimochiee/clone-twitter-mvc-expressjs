@@ -1,5 +1,4 @@
 const Chat = require('../models/chat.schema');
-const User = require('../models/user.schema');
 const { ObjectId } = require('mongodb');
 const catchAsync = require('../utils/catchAsync');
 const CustomError = require('../utils/customError');
