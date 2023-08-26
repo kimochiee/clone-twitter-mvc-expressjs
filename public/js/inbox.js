@@ -44,28 +44,6 @@ const createChatHTML = (chat) => {
   </a>`;
 };
 
-const createChatName = (chat) => {
-  let chatName = chat.chatName;
-
-  if (!chatName) {
-    const otherChatUsers = getOtherChatUsers(chat.users);
-    const namesArray = otherChatUsers.map(
-      (user) => user.firstname + ' ' + user.lastname
-    );
-    chatName = namesArray.join(', ');
-  }
-
-  return chatName;
-};
-
-const getOtherChatUsers = (users) => {
-  if (users.length == 1) {
-    return users;
-  }
-
-  return users.filter((user) => user._id != userRequestJS._id);
-};
-
 const getChatImageElements = (chat) => {
   const otherChatUsers = getOtherChatUsers(chat.users);
   let chatImage = getUserChatImageElement(otherChatUsers[0]);

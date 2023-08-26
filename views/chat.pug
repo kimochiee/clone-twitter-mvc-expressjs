@@ -6,10 +6,11 @@ block content
     else
         script. 
             const chatJS = !{chatJS};
+            const userRequestJS = !{userRequestJS};
         .chatPageContainer
             .chatTitleBarContainer
                 +createChatImage(chat, userRequest)
-                span#chatName this is chat name
+                span#chatName(data-toggle='modal', data-target='#chatNameModal')
             .mainContentContainer
                 .chatContainer
                     .chatMessages
@@ -17,6 +18,8 @@ block content
                         textarea(name='messageInput', placeHolder='Type something...') 
                         button.sendMessageButton
                             i.fas.fa-paper-plane
+
+        +createChatNameModal(chat)
 
 block scripts 
     script(src="/js/chat.js") 

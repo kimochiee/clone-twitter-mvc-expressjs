@@ -14,6 +14,15 @@ const getChatListForUser = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'success', chats });
 });
 
+const getChatById = catchAsync(async (req, res, next) => {
+  const chat = await Chat.findOne({
+    _id: req.params.id,
+    users: { $elemMatch: { $eq: req.user._id } },
+  }).populate('users');
+
+  res.status(200).json({ status: 'success', chat });
+});
+
 const createChat = catchAsync(async (req, res, next) => {
   let users = req.body.users;
 
@@ -42,4 +51,14 @@ const createChat = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'success', chat });
 });
 
-module.exports = { getChatListForUser, createChat };
+const updateChat = catchAsync(async (req, res, next) => {
+  const chat = await Chat.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+
+  res
+    .status(200)
+    .json({ status: 'success', msg: 'update chat successfully', chat });
+});
+
+module.exports = { getChatListForUser, getChatById, createChat, updateChat };
