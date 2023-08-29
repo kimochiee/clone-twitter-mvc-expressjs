@@ -12,7 +12,9 @@ block content
                 +createChatImage(chat, userRequest)
                 span#chatName(data-toggle='modal', data-target='#chatNameModal')
             .mainContentContainer
-                .chatContainer
+                .loadingSpinnerContainer
+                    img(src='/images/loadingSpinner.gif', alt='loading')
+                .chatContainer(style='visibility: hidden')
                     ul.chatMessages
                     .footer
                         textarea.inputTextbox(name='messageInput', placeHolder='Type something...') 

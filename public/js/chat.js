@@ -21,19 +21,28 @@ const renderChatName = async () => {
       });
 
       if (res.data.status === 'success') {
+        const data = res.data.messages;
         let messages = [];
+        let lastSenderId = '';
 
-        res.data.messages.forEach((message) => {
-          const html = createMessageHtml(message);
+        data.forEach((message, index) => {
+          const html = createMessageHtml(
+            message,
+            data[index + 1] ? data[index + 1] : null,
+            lastSenderId
+          );
           messages.push(html);
+          lastSenderId = message.sender._id;
         });
-                          
+
         const messagesHtml = messages.join('');
 
-        // document.querySelector('.chatMessages').innerHTML = html;
         document
           .querySelector('.chatMessages')
           .insertAdjacentHTML('afterbegin', messagesHtml);
+        scrollToBottom(false);
+        document.querySelector('.loadingSpinnerContainer').remove();
+        document.querySelector('.chatContainer').style.visibility = 'visible';
       }
     } catch (error) {
       handleLogout(error);
@@ -106,25 +115,72 @@ const addChatMessageHtml = (message) => {
     return;
   }
 
-  const html = createMessageHtml(message);
+  const html = createMessageHtml(message, null, '');
 
-  // document.querySelector('.chatMessages').innerHTML = html;
-  document
-    .querySelector('.chatMessages')
-    .insertAdjacentHTML('afterbegin', html);
+  document.querySelector('.chatMessages').insertAdjacentHTML('beforeend', html);
+  scrollToBottom(true);
 };
 
-const createMessageHtml = (message) => {
-  const isMine = message.sender._id == userRequestJS._id;
-  const liClassName = isMine
-    ? 'class="message mine"'
-    : 'class="message theirs"';
+const createMessageHtml = (message, nextMessage, lastSenderId) => {
+  const sender = message.sender;
+  const senderName = sender.firstname + ' ' + sender.lastname;
+  const currentSenderId = sender._id;
+  const nextSenderId = nextMessage != null ? nextMessage.sender._id : '';
+  const isFirst = lastSenderId != currentSenderId;
+  const isLast = nextSenderId != currentSenderId;
+  const isMine = sender._id == userRequestJS._id;
+
+  let liClassName = isMine ? 'class="message mine"' : 'class="message theirs"';
+  let nameElement = '';
+  let imageContainer = ``;
+  let profileImage = ``;
+
+  if (isFirst && isMine) {
+    liClassName = 'class="message mine first"';
+  }
+
+  if (isLast && isMine) {
+    liClassName = 'class="message mine last"';
+    profileImage = `<img src="${sender.photo}" />`;
+  }
+
+  if (isFirst && !isMine) {
+    liClassName = 'class="message theirs first"';
+    nameElement = `<span class="senderName">${senderName}</span>`;
+  }
+
+  if (isLast && !isMine) {
+    liClassName = 'class="message theirs last"';
+    profileImage = `<img src="${sender.photo}" />`;
+  }
+
+  if (!isMine) {
+    imageContainer = `<div class="imageContainer">
+      ${profileImage}
+    </div>`;
+  }
 
   return `<li ${liClassName}>
+    ${imageContainer}
     <div class="messageContainer">
+      ${nameElement}
       <span class="messageBody">
         ${message.content}
       </span>
     </div>
   </li>`;
+};
+
+const scrollToBottom = (animated) => {
+  const container = document.querySelector('.chatMessages');
+  const scrollHeight = container.scrollHeight;
+
+  if (animated) {
+    container.scrollTo({
+      top: scrollHeight,
+      behavior: 'smooth',
+    });
+  } else {
+    container.scrollTop = scrollHeight;
+  }
 };
