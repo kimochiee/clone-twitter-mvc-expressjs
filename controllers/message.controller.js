@@ -1,4 +1,5 @@
 const Message = require('../models/message.schema');
+const Chat = require('../models/chat.schema');
 const catchAsync = require('../utils/catchAsync');
 const CustomError = require('../utils/customError');
 
@@ -13,6 +14,9 @@ const createMessage = catchAsync(async (req, res, next) => {
     content,
     chat: chatId,
   });
+
+  await message.populate(['sender', 'chat', 'readBy']);
+  await Chat.findByIdAndUpdate(chatId, { latestMessage: message._id });
 
   res
     .status(201)

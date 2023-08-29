@@ -13,6 +13,31 @@ const renderChatName = async () => {
     } catch (error) {
       handleLogout(error);
     }
+
+    try {
+      const res = await axios({
+        method: 'GET',
+        url: `http://localhost:8001/api/v1/chats/${chatJS._id}/messages`,
+      });
+
+      if (res.data.status === 'success') {
+        let messages = [];
+
+        res.data.messages.forEach((message) => {
+          const html = createMessageHtml(message);
+          messages.push(html);
+        });
+                          
+        const messagesHtml = messages.join('');
+
+        // document.querySelector('.chatMessages').innerHTML = html;
+        document
+          .querySelector('.chatMessages')
+          .insertAdjacentHTML('afterbegin', messagesHtml);
+      }
+    } catch (error) {
+      handleLogout(error);
+    }
   }
 };
 renderChatName();
@@ -37,7 +62,7 @@ if (chatNameButton) {
 const sendMessageButton = document.querySelector('.sendMessageButton');
 if (sendMessageButton) {
   sendMessageButton.addEventListener('click', () => {
-    messageSubmitred();
+    messageSubmited();
   });
 }
 
@@ -45,13 +70,13 @@ const inputTextbox = document.querySelector('.inputTextbox');
 if (inputTextbox) {
   inputTextbox.addEventListener('keydown', (e) => {
     if (e.which == 13 && !e.shiftKey) {
-      messageSubmitred();
+      messageSubmited();
       e.preventDefault();
     }
   });
 }
 
-const messageSubmitred = () => {
+const messageSubmited = () => {
   const content = inputTextbox.value.trim();
   if (content != '') {
     sendMessage(content);
@@ -68,9 +93,38 @@ const sendMessage = async (content) => {
     });
 
     if (res.data.status === 'success') {
-      console.log(res.data.message);
+      addChatMessageHtml(res.data.message);
     }
   } catch (error) {
     handleLogout(error);
   }
+};
+
+const addChatMessageHtml = (message) => {
+  if (!message || !message._id) {
+    alert('message is not valid');
+    return;
+  }
+
+  const html = createMessageHtml(message);
+
+  // document.querySelector('.chatMessages').innerHTML = html;
+  document
+    .querySelector('.chatMessages')
+    .insertAdjacentHTML('afterbegin', html);
+};
+
+const createMessageHtml = (message) => {
+  const isMine = message.sender._id == userRequestJS._id;
+  const liClassName = isMine
+    ? 'class="message mine"'
+    : 'class="message theirs"';
+
+  return `<li ${liClassName}>
+    <div class="messageContainer">
+      <span class="messageBody">
+        ${message.content}
+      </span>
+    </div>
+  </li>`;
 };
