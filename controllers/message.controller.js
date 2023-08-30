@@ -15,7 +15,9 @@ const createMessage = catchAsync(async (req, res, next) => {
     chat: chatId,
   });
 
-  await message.populate(['sender', 'chat', 'readBy']);
+  await (
+    await message.populate(['sender', 'readBy'])
+  ).populate({ path: 'chat', populate: { path: 'users' } });
   await Chat.findByIdAndUpdate(chatId, { latestMessage: message._id });
 
   res

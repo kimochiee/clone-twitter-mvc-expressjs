@@ -21,4 +21,17 @@ io.on('connection', (socket) => {
   socket.on('join room', (room) => socket.join(room));
   socket.on('typing', (room) => socket.in(room).emit('typing'));
   socket.on('stop typing', (room) => socket.in(room).emit('stop typing'));
+
+  socket.on('new message', (newMessage) => {
+    const chat = newMessage.chat;
+
+    if (!chat.users) {
+      return console.log('chat.users is not defined');
+    }
+
+    chat.users.forEach((user) => {
+      if (user._id == newMessage.sender._id) return;
+      socket.in(user._id).emit('message received', newMessage);
+    });
+  });
 });

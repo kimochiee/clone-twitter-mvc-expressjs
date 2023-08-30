@@ -696,3 +696,10 @@ const getOtherChatUsers = (users) => {
 
   return users.filter((user) => user._id != userRequestJS._id);
 };
+
+const messageReceived = (newMessage) => {
+  if (document.querySelector('.chatContainer').length == 0) {
+  } else {
+    addChatMessageHtml(newMessage);
+  }
+};

@@ -143,6 +143,10 @@ const sendMessage = async (content) => {
 
     if (res.data.status === 'success') {
       addChatMessageHtml(res.data.message);
+
+      if (connected) {
+        socket.emit('new message', res.data.message);
+      }
     }
   } catch (error) {
     handleLogout(error);
