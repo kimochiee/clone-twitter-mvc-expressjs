@@ -1,6 +1,17 @@
+var typing = false;
+var lastTypingTime;
+
 const renderChatName = async () => {
   const chatName = document.getElementById('chatName');
   if (chatName) {
+    socket.emit('join room', chatJS._id);
+    socket.on('typing', () => {
+      document.querySelector('.typingDots').style.display = 'block';
+    });
+    socket.on('stop typing', () => {
+      document.querySelector('.typingDots').style.display = 'none';
+    });
+
     try {
       const res = await axios({
         method: 'GET',
@@ -78,6 +89,8 @@ if (sendMessageButton) {
 const inputTextbox = document.querySelector('.inputTextbox');
 if (inputTextbox) {
   inputTextbox.addEventListener('keydown', (e) => {
+    updateTyping();
+
     if (e.which == 13 && !e.shiftKey) {
       messageSubmited();
       e.preventDefault();
@@ -85,11 +98,38 @@ if (inputTextbox) {
   });
 }
 
+const updateTyping = () => {
+  if (!connected) {
+    console.log('not connected');
+    return;
+  }
+
+  if (!typing) {
+    typing = true;
+    socket.emit('typing', chatJS._id);
+  }
+
+  lastTypingTime = new Date().getTime();
+  var timerLength = 3000;
+
+  setTimeout(() => {
+    var timeNow = new Date().getTime();
+    var timeDiff = timeNow - lastTypingTime;
+
+    if (timeDiff >= timerLength && typing) {
+      socket.emit('stop typing', chatJS._id);
+      typing = false;
+    }
+  }, timerLength);
+};
+
 const messageSubmited = () => {
   const content = inputTextbox.value.trim();
   if (content != '') {
     sendMessage(content);
     inputTextbox.value = '';
+    socket.emit('stop typing', chatJS._id);
+    typing = false;
   }
 };
 

@@ -32,6 +32,10 @@ a:hover {
     text-decoration: none;
 }
 
+ul {
+    margin: 0;
+}
+
 button {
     background-color: transparent;
     border: none;
@@ -672,14 +676,24 @@ nav a:hover {
     display: flex;
     align-items: flex-end;
     flex-shrink: 0;
-    -webkit-flex: 0;
 }
 
+.typingDots img,
 .chatMessages .message .messageBody {
     background-color: #f1f0f0;
     padding: 6px 12px;
     border-radius: 18px;
     font-size: 14px;
+}
+
+.typingDots img {
+    height: 35px;
+}
+
+.typingDots {
+    padding: 0 15px;
+    padding-bottom: 0;
+    display: none;
 }
 
 .chatMessages .message .messageContainer {
@@ -770,3 +784,4 @@ nav a:hover {
     width: 50%;
     max-width: 75px;
 }
+

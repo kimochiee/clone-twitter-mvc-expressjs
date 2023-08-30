@@ -29,6 +29,8 @@ const getChatByUserId = (userLoggedInId, otherUserId) => {
 const renderHomepage = (req, res) => {
   res.status(200).render('home', {
     title: 'Home',
+    userRequest: req.user,
+    userRequestJS: JSON.stringify(req.user),
   });
 };
 
@@ -47,6 +49,8 @@ const renderRegisterPage = (req, res) => {
 const renderPostPage = (req, res) => {
   res.status(200).render('post', {
     title: 'View page',
+    userRequest: req.user,
+    userRequestJS: JSON.stringify(req.user),
   });
 };
 
@@ -58,6 +62,7 @@ const renderProfile = catchAsync(async (req, res, next) => {
     user,
     userJS: user && JSON.stringify(user._id),
     userRequest: req.user,
+    userRequestJS: JSON.stringify(req.user),
     selectedTab: 'posts',
     selectedTabJS: JSON.stringify('posts'),
   });
@@ -71,6 +76,7 @@ const renderProfileWithReplies = catchAsync(async (req, res, next) => {
     user,
     userJS: JSON.stringify(user._id),
     userRequest: req.user,
+    userRequestJS: JSON.stringify(req.user),
     selectedTab: 'replies',
     selectedTabJS: JSON.stringify('replies'),
   });
