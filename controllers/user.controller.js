@@ -1,4 +1,5 @@
 const User = require('../models/user.schema');
+const Notification = require('../models/notification.schema');
 const catchAsync = require('../utils/catchAsync');
 const CustomError = require('../utils/customError');
 
@@ -18,14 +19,12 @@ const getAllUsers = catchAsync(async (req, res, next) => {
 
   const users = await User.find(queryObj);
 
-  res
-    .status(200)
-    .json({
-      status: 'success',
-      msg: 'get all users successfully',
-      users,
-      userRequest: req.user,
-    });
+  res.status(200).json({
+    status: 'success',
+    msg: 'get all users successfully',
+    users,
+    userRequest: req.user,
+  });
 });
 
 const getFollowingList = catchAsync(async (req, res, next) => {
@@ -66,6 +65,15 @@ const follow = catchAsync(async (req, res, next) => {
     { [option]: { followers: requestUser._id } },
     { new: true }
   );
+
+  if (!isFollowing) {
+    await Notification.insertNotification(
+      userId,
+      req.user._id,
+      'follow',
+      req.user._id
+    );
+  }
 
   res
     .status(200)

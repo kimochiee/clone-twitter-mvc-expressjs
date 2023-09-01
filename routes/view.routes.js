@@ -14,7 +14,8 @@ const {
   renderSearchPageForUsers,
   renderInboxPage,
   renderNewMessagePage,
-  renderChatPage
+  renderChatPage,
+  renderNotificationsPage,
 } = require('../controllers/view.controller');
 const { isLoggedIn } = require('../middlewares/auth.middleware');
 
@@ -36,5 +37,7 @@ router.get('/profile/:username', isLoggedIn, renderProfile);
 router.get('/profile/:username/replies', isLoggedIn, renderProfileWithReplies);
 router.get('/profile/:username/following', isLoggedIn, renderFollowing);
 router.get('/profile/:username/followers', isLoggedIn, renderFollowers);
+
+router.get('/notifications', isLoggedIn, renderNotificationsPage);
 
 module.exports = router;

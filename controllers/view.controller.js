@@ -183,6 +183,14 @@ const renderChatPage = catchAsync(async (req, res, next) => {
   res.status(200).render('chat', payload);
 });
 
+const renderNotificationsPage = (req, res) => {
+  res.status(200).render('notifications', {
+    title: 'Notifications',
+    userRequest: req.user,
+    userRequestJS: JSON.stringify(req.user),
+  });
+};
+
 module.exports = {
   renderHomepage,
   renderLoginPage,
@@ -197,4 +205,5 @@ module.exports = {
   renderInboxPage,
   renderNewMessagePage,
   renderChatPage,
+  renderNotificationsPage,
 };

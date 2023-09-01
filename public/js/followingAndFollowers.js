@@ -35,7 +35,10 @@ const renderUser = (datas, container) => {
         ? 'Following'
         : 'Follow';
 
-      if (userRequestJS.following.includes(data._id)) {
+      if (
+        userRequestJS.following.includes(data._id) ||
+        userRequestJS.followers.includes(data._id)
+      ) {
         followButton = `<div class="followButtonContainer">
             <button ${buttonClass} data-user="${data._id}">${buttonText}</button>
         </div>`;

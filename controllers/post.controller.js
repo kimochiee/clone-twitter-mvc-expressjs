@@ -1,5 +1,6 @@
 const Post = require('../models/post.schema');
 const User = require('../models/user.schema');
+const Notification = require('../models/notification.schema');
 const catchAsync = require('../utils/catchAsync');
 const CustomError = require('../utils/customError');
 
@@ -118,7 +119,19 @@ const createPost = catchAsync(async (req, res, next) => {
       postedBy: req.user._id,
       replyTo: replyTo ? replyTo : null,
     })
-  ).populate(['postedBy', 'replyTo']);
+  )
+    // .populate(['postedBy', 'replyTo'])
+    .populate('postedBy')
+    .populate({ path: 'replyTo', populate: { path: 'postedBy' } });
+
+  if (replyTo) {
+    await Notification.insertNotification(
+      post.replyTo.postedBy,
+      req.user._id,
+      'reply',
+      post._id
+    );
+  }
 
   res.status(200).json({
     status: 'success',
@@ -189,6 +202,15 @@ const likePost = catchAsync(async (req, res, next) => {
     { new: true }
   );
 
+  if (!isLiked) {
+    await Notification.insertNotification(
+      post.postedBy,
+      req.user._id,
+      'postLike',
+      post._id
+    );
+  }
+
   res
     .status(200)
     .json({ status: 'success', msg: 'Like post successfully', post, user });
@@ -238,6 +260,13 @@ const retweet = catchAsync(async (req, res, next) => {
       postId,
       { [option]: { retweetUsers: userId } },
       { new: true }
+    );
+
+    await Notification.insertNotification(
+      post.postedBy,
+      req.user._id,
+      'retweet',
+      post._id
     );
 
     res

@@ -699,6 +699,7 @@ const getOtherChatUsers = (users) => {
 
 const messageReceived = (newMessage) => {
   if (document.querySelector('.chatContainer').length == 0) {
+    return;
   } else {
     addChatMessageHtml(newMessage);
   }
