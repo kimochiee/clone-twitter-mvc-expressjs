@@ -5,12 +5,18 @@ const CustomError = require('../utils/customError');
 const { ObjectId } = require('mongodb');
 
 const getChatListForUser = catchAsync(async (req, res, next) => {
-  const chats = await Chat.find({
+  let chats = await Chat.find({
     users: { $elemMatch: { $eq: req.user._id } },
   })
     .populate('users')
     .populate({ path: 'latestMessage', populate: { path: 'sender' } })
     .sort({ updatedAt: -1 });
+
+  if (req.query.unreadOnly != undefined && req.query.unreadOnly == 'true') {
+    chats = chats.filter(
+      (chat) => !chat.latestMessage.readBy.includes(req.user._id)
+    );
+  }
 
   res.status(200).json({ status: 'success', chats });
 });

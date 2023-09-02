@@ -26,8 +26,10 @@ html(lang='en')
                         i.fas.fa-search
                     a(href='/notifications') 
                         i.fas.fa-bell
+                        span#notificationBadge
                     a(href='/messages') 
                         i.fas.fa-envelope
+                        span#messageBadge
                     a(href=`/profile/${userRequest? userRequest.username:user.username}`) 
                         i.fas.fa-user
                     a.btn--logout

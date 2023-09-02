@@ -1,6 +1,11 @@
 var cropper;
 var selectedUsers = [];
 
+$(document).ready(() => {
+  refreshMessageBadge();
+  refreshNotificationBadge();
+});
+
 // ---------------------------------------------------------------
 const handleLogout = async (err) => {
   if (
@@ -746,6 +751,53 @@ const markNotificationAsOpened = async (
 
     if (res.data.status === 'success') {
       callback();
+    }
+  } catch (error) {
+    handleLogout(error);
+  }
+};
+
+// ----------------------------badge--------------------------------
+const refreshMessageBadge = async () => {
+  try {
+    const res = await axios({
+      method: 'GET',
+      url: 'http://localhost:8001/api/v1/chats?unreadOnly=true',
+    });
+
+    if (res.data.status === 'success') {
+      const numResults = res.data.chats.length;
+
+      if (numResults > 0) {
+        document.getElementById('messageBadge').innerText = numResults;
+        document.getElementById('messageBadge').classList.add('active');
+      } else {
+        document.getElementById('messageBadge').innerText = '';
+        document.getElementById('messageBadge').classList.remove('active');
+      }
+    }
+  } catch (error) {
+    handleLogout(error);
+  }
+};
+
+const refreshNotificationBadge = async () => {
+  try {
+    const res = await axios({
+      method: 'GET',
+      url: 'http://localhost:8001/api/v1/notifications?unreadOnly=true',
+    });
+
+    if (res.data.status === 'success') {
+      const numResults = res.data.notifications.length;
+
+      if (numResults > 0) {
+        document.getElementById('notificationBadge').innerText = numResults;
+        document.getElementById('notificationBadge').classList.add('active');
+      } else {
+        document.getElementById('notificationBadge').innerText = '';
+        document.getElementById('notificationBadge').classList.remove('active');
+      }
     }
   } catch (error) {
     handleLogout(error);

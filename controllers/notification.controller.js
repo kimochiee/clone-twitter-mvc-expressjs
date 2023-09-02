@@ -5,10 +5,16 @@ const catchAsync = require('../utils/catchAsync');
 const CustomError = require('../utils/customError');
 
 const getAllNotificationsToUser = catchAsync(async (req, res, next) => {
-  const notifications = await Notification.find({
+  let searchObjs = {
     userTo: req.user._id,
     notificationType: { $ne: 'newMessage' },
-  })
+  };
+
+  if (req.query.unreadOnly != undefined && req.query.unreadOnly == 'true') {
+    searchObjs.opened = false;
+  }
+
+  const notifications = await Notification.find(searchObjs)
     .populate(['userTo', 'userFrom'])
     .sort({ createdAt: -1 });
 
