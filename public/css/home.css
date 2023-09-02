@@ -785,3 +785,11 @@ nav a:hover {
     max-width: 75px;
 }
 
+/* --------------------------------------------- */
+.resultListItem.active {
+    background-color: var(--blueBackground);
+}
+
+.resultListItem.notification * {
+    pointer-events: none;
+}

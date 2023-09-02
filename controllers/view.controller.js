@@ -55,7 +55,11 @@ const renderPostPage = (req, res) => {
 };
 
 const renderProfile = catchAsync(async (req, res, next) => {
-  const user = await User.findOne({ username: req.params.username });
+  let user = await User.findOne({ username: req.params.username });
+
+  if (!user) {
+    user = await User.findById(req.params.username);
+  }
 
   res.status(200).render('profile', {
     title: user ? user.username : 'User not found',

@@ -704,3 +704,50 @@ const messageReceived = (newMessage) => {
     addChatMessageHtml(newMessage);
   }
 };
+
+// ----------------------------notification--------------------------------
+document.addEventListener('click', async (e) => {
+  const target = e.target;
+  let notificationId, href;
+
+  if (
+    target.classList.contains('resultListItem') &&
+    target.classList.contains('active')
+  ) {
+    notificationId = target.getAttribute('data-notification');
+    href = target.getAttribute('href');
+    e.preventDefault();
+
+    const callback = () => (window.location = href);
+    markNotificationAsOpened(notificationId, callback);
+  }
+});
+
+const markNotificationAsOpened = async (
+  notificationId = null,
+  callback = null
+) => {
+  if (callback == null) {
+    callback = () => {
+      return location.reload();
+    };
+  }
+
+  const url =
+    notificationId != null
+      ? `http://localhost:8001/api/v1/notifications/${notificationId}/markAsOpened`
+      : 'http://localhost:8001/api/v1/notifications/markAsOpened';
+
+  try {
+    const res = await axios({
+      method: 'PATCH',
+      url,
+    });
+
+    if (res.data.status === 'success') {
+      callback();
+    }
+  } catch (error) {
+    handleLogout(error);
+  }
+};
