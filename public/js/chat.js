@@ -52,6 +52,7 @@ const renderChatName = async () => {
           .querySelector('.chatMessages')
           .insertAdjacentHTML('afterbegin', messagesHtml);
         scrollToBottom(false);
+        markAllMessageAsRead();
         document.querySelector('.loadingSpinnerContainer').remove();
         document.querySelector('.chatContainer').style.visibility = 'visible';
       }
@@ -226,5 +227,20 @@ const scrollToBottom = (animated) => {
     });
   } else {
     container.scrollTop = scrollHeight;
+  }
+};
+
+const markAllMessageAsRead = async () => {
+  try {
+    const res = await axios({
+      method: 'PATCH',
+      url: `http://localhost:8001/api/v1/chats/${chatJS._id}/messages/markAsRead`,
+    });
+
+    if (res.data.status === 'success') {
+      refreshMessageBadge();
+    }
+  } catch (error) {
+    handleLogout(error);
   }
 };

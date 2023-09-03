@@ -14,7 +14,8 @@ const getChatListForUser = catchAsync(async (req, res, next) => {
 
   if (req.query.unreadOnly != undefined && req.query.unreadOnly == 'true') {
     chats = chats.filter(
-      (chat) => !chat.latestMessage.readBy.includes(req.user._id)
+      (chat) =>
+        chat.latestMessage && !chat.latestMessage.readBy.includes(req.user._id)
     );
   }
 
@@ -63,7 +64,6 @@ const createChat = catchAsync(async (req, res, next) => {
     users,
     isGroupChat: true,
   };
-  console.log(chatData);
 
   const chat = await Chat.create(chatData);
 
@@ -80,10 +80,21 @@ const updateChat = catchAsync(async (req, res, next) => {
     .json({ status: 'success', msg: 'update chat successfully', chat });
 });
 
+const markAllMessageAsRead = catchAsync(async (req, res, next) => {
+  await Message.updateMany(
+    { chat: req.params.id },
+    { $addToSet: { readBy: req.user._id } },
+    { new: true }
+  );
+
+  res.status(200).json({ status: 'success' });
+});
+
 module.exports = {
   getChatListForUser,
   getChatById,
   createChat,
   updateChat,
   getAllMessagesFromChat,
+  markAllMessageAsRead,
 };

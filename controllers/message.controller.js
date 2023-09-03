@@ -7,7 +7,6 @@ const CustomError = require('../utils/customError');
 //------------------------------------------------------
 const insertNotifications = (chat, message) => {
   chat.users.forEach((userId) => {
-    console.log(userId, message.sender._id);
     if (userId == message.sender._id.toString()) {
       return;
     } else {

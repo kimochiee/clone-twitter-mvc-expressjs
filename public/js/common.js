@@ -665,7 +665,7 @@ const updateSelectedUsersHTML = () => {
     .insertAdjacentHTML('beforebegin', elements);
 };
 
-// ----------------------------chat--------------------------------
+// ----------------------------chat-message--------------------------------
 const createChatButton = document.getElementById('createChatButton');
 if (createChatButton) {
   createChatButton.addEventListener('click', async () => {
@@ -704,15 +704,79 @@ const getOtherChatUsers = (users) => {
     return users;
   }
 
-  return users.filter((user) => user._id != userRequestJS._id);
+  return users.filter((user) => user._id != userLoggedInJS._id);
 };
 
 const messageReceived = (newMessage) => {
-  if (document.querySelector('.chatContainer').length == 0) {
-    return;
+  if (!document.querySelector(`[data-room="${newMessage.chat.id}"]`)) {
+    showMessagePopup(newMessage);
   } else {
     addChatMessageHtml(newMessage);
   }
+
+  refreshMessageBadge();
+};
+
+const showMessagePopup = (data) => {
+  if (!data.chat.latestMessage._id) {
+    data.chat.latestMessage = data;
+  }
+
+  const html = createChatHTML(data.chat);
+  const element = document.createElement('div');
+  element.innerHTML = html;
+  document.querySelector('#notificationList').prepend(element);
+
+  setTimeout(() => {
+    fadeOutElement(element);
+  }, 3000);
+};
+
+const createChatHTML = (chat) => {
+  const chatName = createChatName(chat);
+  const image = getChatImageElements(chat);
+  const latestMessage = getLatestMessage(chat.latestMessage);
+  const activeClass =
+    !chat.latestMessage ||
+    chat.latestMessage.readBy.includes(userLoggedInJS._id)
+      ? ''
+      : 'active';
+
+  return `<a href="/messages/${chat._id}" class="resultListItem ${activeClass}">
+    ${image}
+    <div class="resultsDetailContainer ellipsis">
+        <span class="heading ellipsis">${chatName}</span>
+        <span class="subText ellipsis">${latestMessage}</span>
+    </div>
+  </a>`;
+};
+
+const getLatestMessage = (latestMessage) => {
+  if (latestMessage != null) {
+    const sender = latestMessage.sender;
+    return `${sender.firstname} ${sender.lastname}: ${latestMessage.content}`;
+  }
+
+  return 'New chat';
+};
+
+const getChatImageElements = (chat) => {
+  const otherChatUsers = getOtherChatUsers(chat.users);
+  let chatImage = getUserChatImageElement(otherChatUsers[0]);
+  let groupChatClass = '';
+
+  if (otherChatUsers.length > 1) {
+    groupChatClass = 'groupChatImage';
+    chatImage += getUserChatImageElement(otherChatUsers[1]);
+  }
+
+  return `<div class="resultsImageContainer ${groupChatClass}">
+    ${chatImage}
+  </div>`;
+};
+
+const getUserChatImageElement = (user) => {
+  return `<img src="${user.photo}" alt="user photo">`;
 };
 
 // ----------------------------notification--------------------------------

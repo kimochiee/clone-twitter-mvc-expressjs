@@ -30,46 +30,4 @@ const outputChatList = (chatList, container) => {
   }
 };
 
-const createChatHTML = (chat) => {
-  const chatName = createChatName(chat);
-  const image = getChatImageElements(chat);
-  const latestMessage = getLatestMessage(chat.latestMessage);
-
-  return `<a href="/messages/${chat._id}" class="resultListItem">
-    ${image}
-    <div class="resultsDetailContainer ellipsis">
-        <span class="heading ellipsis">${chatName}</span>
-        <span class="subText ellipsis">${latestMessage}</span>
-    </div>
-  </a>`;
-};
-
-const getLatestMessage = (latestMessage) => {
-  if (latestMessage != null) {
-    const sender = latestMessage.sender;
-    return `${sender.firstname} ${sender.lastname}: ${latestMessage.content}`;
-  }
-
-  return 'New chat';
-};
-
-const getChatImageElements = (chat) => {
-  const otherChatUsers = getOtherChatUsers(chat.users);
-  let chatImage = getUserChatImageElement(otherChatUsers[0]);
-  let groupChatClass = '';
-
-  if (otherChatUsers.length > 1) {
-    groupChatClass = 'groupChatImage';
-    chatImage += getUserChatImageElement(otherChatUsers[1]);
-  }
-
-  return `<div class="resultsImageContainer ${groupChatClass}">
-    ${chatImage}
-  </div>`;
-};
-
-const getUserChatImageElement = (user) => {
-  return `<img src="${user.photo}" alt="user photo">`;
-};
-
 renderChatList();
