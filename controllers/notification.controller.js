@@ -25,6 +25,14 @@ const getAllNotificationsToUser = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'success', notifications });
 });
 
+const getLatestNotifcation = catchAsync(async (req, res, next) => {
+  const notification = await Notification.findOne({ userTo: req.user._id })
+    .populate(['userTo', 'userFrom'])
+    .sort({ createdAt: -1 });
+
+  res.status(200).json({ status: 'success', notification });
+});
+
 const markAsOpened = catchAsync(async (req, res, next) => {
   await Notification.findByIdAndUpdate(
     req.params.id,
@@ -45,4 +53,9 @@ const markAllAsOpened = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'success' });
 });
 
-module.exports = { getAllNotificationsToUser, markAsOpened, markAllAsOpened };
+module.exports = {
+  getAllNotificationsToUser,
+  getLatestNotifcation,
+  markAsOpened,
+  markAllAsOpened,
+};

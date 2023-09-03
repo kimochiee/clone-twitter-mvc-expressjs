@@ -241,6 +241,7 @@ if (submitReplyButton) {
         document.querySelector('.postContainer').innerHTML =
           html + document.querySelector('.postContainer').innerHTML;
 
+        emitNotification(res.data.post.replyTo.postedBy._id);
         location.reload();
       }
     } catch (error) {
@@ -273,6 +274,8 @@ document.addEventListener('click', async (e) => {
 
         if (res.data.post.likes.includes(res.data.user._id)) {
           button.classList.add('active');
+
+          emitNotification(res.data.post.postedBy._id);
         } else {
           button.classList.remove('active');
         }
@@ -307,6 +310,7 @@ document.addEventListener('click', async (e) => {
 
         if (res.data.post.retweetUsers.includes(res.data.user._id)) {
           button.classList.add('active');
+          emitNotification(res.data.post.postedBy._id);
         } else {
           button.classList.remove('active');
         }
@@ -381,6 +385,7 @@ document.addEventListener('click', async (e) => {
         ) {
           target.classList.add('following');
           target.innerText = 'Following';
+          emitNotification(userId);
 
           const followersText = document.getElementById('followersValue');
           if (followersText) {
@@ -802,4 +807,78 @@ const refreshNotificationBadge = async () => {
   } catch (error) {
     handleLogout(error);
   }
+};
+
+// ----------------------------notification popup--------------------------------
+const showNotificationPopup = (data) => {
+  const html = createNotificationHtml(data);
+  const element = document.createElement('div');
+  element.innerHTML = html;
+  document.querySelector('#notificationList').prepend(element);
+
+  setTimeout(() => {
+    fadeOutElement(element);
+  }, 3000);
+};
+
+const fadeOutElement = (element) => {
+  let opacity = 1;
+  const timer = setInterval(() => {
+    if (opacity <= 0.1) {
+      clearInterval(timer);
+      element.style.display = 'none';
+    }
+    element.style.opacity = opacity;
+    opacity -= opacity * 0.1;
+  }, 40);
+};
+
+const createNotificationHtml = (notification) => {
+  const userFrom = notification.userFrom;
+  const text = getNotificationText(notification);
+  const url = getNotificationURL(notification);
+  const className = notification.opened ? '' : 'active';
+
+  return `<a href="${url}" class="resultListItem notification ${className}" data-notification="${notification._id}">
+    <div class="resultsImageContainer">
+      <img src="${userFrom.photo}">
+    </div>
+    <div class="resultsDetailsContainer ellipsis">
+      ${text}
+    </div>
+  </a>`;
+};
+
+const getNotificationText = (notification) => {
+  const userFrom = notification.userFrom;
+  const userFromName = `${userFrom.firstname} ${userFrom.lastname}`;
+  let text = '';
+
+  if (notification.notificationType == 'retweet') {
+    text = `<strong>${userFromName}</strong> retweeted one of your posts`;
+  } else if (notification.notificationType == 'postLike') {
+    text = `<strong>${userFromName}</strong> liked one of your posts`;
+  } else if (notification.notificationType == 'reply') {
+    text = `<strong>${userFromName}</strong> replied one of your posts`;
+  } else if (notification.notificationType == 'follow') {
+    text = `<strong>${userFromName}</strong> followed you`;
+  }
+
+  return `<span class="ellipsis">${text}</span>`;
+};
+
+const getNotificationURL = (notification) => {
+  let url = '#';
+
+  if (
+    notification.notificationType == 'retweet' ||
+    notification.notificationType == 'postLike' ||
+    notification.notificationType == 'reply'
+  ) {
+    url = `/posts/${notification.entityId}`;
+  } else if (notification.notificationType == 'follow') {
+    url = `/profile/${notification.entityId}`;
+  }
+
+  return url;
 };
